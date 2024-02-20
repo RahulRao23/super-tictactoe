@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Management</title>
+  <link rel="stylesheet" href="/homePage/homePage.css">
+</head>
+<body>
+  <h1>Room Management</h1>
+  <div class="container">
+    <button type="button" id="createRoomBtn">Create Room</button>
+    <button type="button" id="joinRoomBtn">Join Room</button>
+  </div>
+  <div id="createRoomForm" style="display: none;">
+    <form id="createRoomForm">
+      <input type="text" id="usernameCreate" placeholder="Enter Username" required>
+      <button type="submit">Create Room</button>
+    </form>
+  </div>
+  <div id="joinRoomForm" style="display: none;">
+    <form id="joinRoomForm">
+      <input type="text" id="usernameJoin" placeholder="Enter Username" required>
+      <input type="password" id="passcodeJoin" placeholder="Enter Passcode" required>
+      <button type="submit">Join Room</button>
+    </form>
+  </div>
+
+  <script src="/homePage/homePage.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</body>
+</html>
