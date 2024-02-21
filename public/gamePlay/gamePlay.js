@@ -1,15 +1,12 @@
 // Function to handle clicks on the Tic Tac Toe board
 function handleClick(boardRow, boardCol, row, col) {
-	// Example: When a button inside a box is clicked, you can trigger an API call
 	console.log('Clicked on box:', boardRow, boardCol, row, col);
-	// Trigger API call here
 }
 
 // Function to handle clicks on the parent boxes
-function handleBoxClick(row, col) {
-	// Example: When a parent box is clicked, you can trigger an API call or perform other actions
-	console.log('Clicked on parent box:', row, col);
-	// Trigger API call or perform other actions here
+function handleBoxClick(button, row, col) {
+	const innerBoard = button.parentNode.getAttribute('board-value');
+	console.log('Clicked on parent box:', innerBoard, row, col);
 }
 
 let socket;
@@ -55,8 +52,8 @@ window.addEventListener('load', function () {
 		const { passcode, player_1, player_2 } = data;
 		
 		passcodeDiv.textContent = 'Room Passcode: ' + passcode;
-		player1Div.textContent = player_1;
-		if(player_2) player2Div.textContent = player_2;
+		player1Div.textContent = player_1 + ': X';
+		if(player_2) player2Div.textContent = player_2 + ': O';
 	});
 
 	socket.on('invalid_room_join', () => {
@@ -65,14 +62,14 @@ window.addEventListener('load', function () {
 });
 
 // Timer
-let timer = document.getElementById('timer');
-let seconds = 0;
-let minutes = 0;
-setInterval(() => {
-	seconds++;
-	if (seconds === 60) {
-			minutes++;
-			seconds = 0;
-	}
-	timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}, 1000);
+// let timer = document.getElementById('timer');
+// let seconds = 0;
+// let minutes = 0;
+// setInterval(() => {
+// 	seconds++;
+// 	if (seconds === 60) {
+// 			minutes++;
+// 			seconds = 0;
+// 	}
+// 	timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+// }, 1000);
