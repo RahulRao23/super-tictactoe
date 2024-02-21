@@ -70,6 +70,13 @@ const socketHandler = async (io, socket) => {
 			return;
 		}
 
+		const roomData = await redis.hGetAll('Room:' + roomId);
+		if (roomData.player_1 && roomData.player_2) {
+			socket.emit('invalid_room_join', { user_name });
+			// await redisDisconnect();
+			return;
+		}
+
 		await Promise.all([
 			redis.del(passcodeKey),
 			redis.hSet(
