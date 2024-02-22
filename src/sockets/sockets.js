@@ -9,7 +9,7 @@ const socketHandler = async (io, socket) => {
 		const redis = await redisConnect();
 		const user = 'User:' + user_name;
 
-		const userExists = await redis.hGet(user, 'user_name');
+		const userExists = await redis.hGet(user, 'room_id');
 		if (userExists) {
 			socket.emit('user_exists', { user_name });
 			// await redisDisconnect();
@@ -19,6 +19,9 @@ const socketHandler = async (io, socket) => {
 		const passcode = Math.floor(100000 + Math.random() * 900000);
 		const roomId = v4();
 		
+		const gameBoard = Array(3).fill(Array(3).fill(null));
+		const innerGameBoards = Array(9).fill(gameBoard);
+
 		await Promise.all([
 			redis.hSet(
 				user, 
@@ -37,6 +40,8 @@ const socketHandler = async (io, socket) => {
 				{
 					passcode,
 					player_1: user_name,
+					main_board: JSON.stringify(gameBoard),
+					sub_boards: JSON.stringify(innerGameBoards)
 				}
 			),
 		]);
@@ -52,7 +57,7 @@ const socketHandler = async (io, socket) => {
 
 		const user = 'User:' + user_name;
 
-		const userExists = await redis.hGet(user, 'user_name');
+		const userExists = await redis.hGet(user, 'room_id');
 		if (userExists) {
 			socket.emit('user_exists', { user_name });
 			// await redisDisconnect();
