@@ -19,8 +19,32 @@ const socketHandler = async (io, socket) => {
 		const passcode = Math.floor(100000 + Math.random() * 900000);
 		const roomId = v4();
 		
-		const gameBoard = Array(3).fill(Array(3).fill(null));
-		const innerGameBoards = Array(9).fill(gameBoard);
+		// const gameBoard = Array(3).fill(Array(3).fill(null));
+		// const innerGameBoards = Array(3).fill(Array(3).fill(null));
+
+		const gameBoardStructure = {
+			'0-0': null,
+			'0-1': null,
+			'0-2': null,
+			'1-0': null,
+			'1-1': null,
+			'1-2': null,
+			'2-0': null,
+			'2-1': null,
+			'2-2': null,
+		};
+		const gameBoard = {
+			'0-0': { inner_game_board: gameBoardStructure },
+			'0-1': { inner_game_board: gameBoardStructure },
+			'0-2': { inner_game_board: gameBoardStructure },
+			'1-0': { inner_game_board: gameBoardStructure },
+			'1-1': { inner_game_board: gameBoardStructure },
+			'1-2': { inner_game_board: gameBoardStructure },
+			'2-0': { inner_game_board: gameBoardStructure },
+			'2-1': { inner_game_board: gameBoardStructure },
+			'2-2': { inner_game_board: gameBoardStructure },
+		};
+		
 
 		await Promise.all([
 			redis.hSet(
@@ -40,8 +64,7 @@ const socketHandler = async (io, socket) => {
 				{
 					passcode,
 					player_1: user_name,
-					main_board: JSON.stringify(gameBoard),
-					sub_boards: JSON.stringify(innerGameBoards)
+					game_board: JSON.stringify(gameBoard),
 				}
 			),
 		]);

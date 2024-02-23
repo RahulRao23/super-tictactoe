@@ -4,9 +4,9 @@ function handleClick(boardRow, boardCol, row, col) {
 }
 
 // Function to handle clicks on the parent boxes
-function handleBoxClick(button, row, col) {
-	const innerBoard = button.parentNode.getAttribute('board-value');
-	console.log('Clicked on parent box:', innerBoard, row, col);
+function handleBoxClick(mainBoard, innerBoardPosition) {
+	const innerBoard = mainBoard.parentNode.getAttribute('board-value');
+	console.log('Clicked on parent box:', innerBoard, innerBoardPosition);
 }
 
 let socket;
