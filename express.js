@@ -32,12 +32,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', router);
 app.use('/user', userRouter);
 
-io.on('connection', async socket => {
-	console.log('Socket connected: ', socket.id);
-	// console.log("Socket data:", socket.handshake.query);
+// io.on('connection', async socket => {
+// 	console.log('Socket connected: ', socket.id);
+// 	// console.log("Socket data:", socket.handshake.query);
 
-	await socketHandler(io, socket);
-});
+// 	await socketHandler(io, socket);
+// });
+
+socketHandler(io);
 
 server.listen(PORT, () => { 
 	console.log(`Server running at http://localhost:${PORT}`) 
