@@ -36,15 +36,9 @@ io.on('connection', async socket => {
 	console.log('Socket connected: ', socket.id);
 	// console.log("Socket data:", socket.handshake.query);
 
-	socket.on('debug', () => {
-		io.emit('debug', 'socket successful');
-	});
-
 	await socketHandler(io, socket);
 });
 
 server.listen(PORT, () => { 
 	console.log(`Server running at http://localhost:${PORT}`) 
 });
-
-global.io = io;

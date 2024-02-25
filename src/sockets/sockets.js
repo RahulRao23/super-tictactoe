@@ -3,6 +3,43 @@ const CONSTANTS = require('../utilities/constants');
 
 const socketHandler = async (io, socket) => {
 	
+	function checkWinner(board, boardPosition, move) {
+		const [row, col] = boardPosition.split('-');
+		board[`${row}-${col}`] = move;
+		if (
+			(board[`${row}-0`] == board[`${row}-1`] && board[`${row}-1`] == board[`${row}-2`]) ||	// Horizontal line
+			(board[`0-${col}`] == board[`1-${col}`] && board[`1-${col}`] == board[`2-${col}`])	// Vertical line
+		) {
+			return true;
+		}
+		// Diagonal line
+		// Check diagonal match only on entering corner or middle box
+		if (
+			(row !== 1 && col !== 1) ||	
+			(row == col)
+		) {
+			if (
+				(board['0-0'] == move && board['1-1'] == move && board['2-2']) == move ||
+				(board['0-2'] == move && board['1-1'] == move && board['2-0']) == move
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function nextAllowedBoxes(board, boardPosition) {
+		const [row, col] = boardPosition.split('-');
+		let allowedBoxes;
+		// If current box is already completed then opponent can insert in any available boxes
+		if (board[`${row}-${col}`].winner) {
+			allowedBoxes = Object.entries(board).map(([box, gameData]) => {
+				if (!gameData.winner) return box;
+			});
+		}
+		return [`${row}-${col}`];
+	}
+
 	socket.on('create_room', async data => {
 		const { v4 } = require('uuid')
 		const { user_name } = data;
@@ -65,6 +102,7 @@ const socketHandler = async (io, socket) => {
 					passcode,
 					player_1: user_name,
 					game_board: JSON.stringify(gameBoard),
+					next_turn: user_name,
 				}
 			),
 		]);
@@ -140,8 +178,85 @@ const socketHandler = async (io, socket) => {
 
 		socket.join(roomKey);
 
-		io.to(roomKey).emit('get_room_response', roomData);
+		io.to(roomKey).emit(
+			'get_room_response', 
+			{
+				passcode: roomData.passcode,
+				player_1: roomData.player_1,
+				player_2: roomData.player_2,
+				next_turn: roomData.player_1 
+			}
+		);
 		// await redisDisconnect();
+		return;
+	});
+
+	socket.on('player_turn', async data => {
+		const { room_id, username, mainBoardPosition, innerBoardPosition } = data;
+
+		const redis = await redisConnect();
+		const roomKey = 'Room:' + room_id;
+		const roomData = await redis.hGetAll(roomKey);
+		if(!roomData) {
+			socket.emit('invalid_room_join', { room_id });
+			// await redisDisconnect();
+			return;
+		}
+		if (!roomData.player_1 || !roomData.player_2) {
+			socket.emit('invalid_data', { msg: 'Can not start the game. Please wait till your opponent joins the game!' });
+			return;
+		}
+
+		if (roomData.next_turn !== username) {
+			socket.emit('invalid_data', { msg: 'Not your turn. Please wait for your opponent to play their turn!' });
+			return;
+		}
+
+		const gameBoard = JSON.parse(roomData.game_board);
+		const innerBoard = gameBoard[mainBoardPosition];
+
+		if (innerBoard.winner) {
+			socket.emit('invalid_data', { msg: 'Board is already completed. Please try other board.' });
+			return;
+		}
+		const move = roomData.player_1 == username ? CONSTANTS.PLAYER_SIGN.X : CONSTANTS.PLAYER_SIGN.O;
+
+		const isWinnerOfInnerBoard = checkWinner(innerBoard.inner_game_board, innerBoardPosition, move);
+
+		if (isWinnerOfInnerBoard) {
+			innerBoard.winner = move;
+
+			const mainBoard = {};
+			Object.entries(gameBoard).map(([key, gameData]) => mainBoard[key] = gameData.winner ? gameData.winner : null);
+
+			const isGameWinner = checkWinner(mainBoard, mainBoardPosition);
+			if (isGameWinner) {
+				io.to(roomKey).emit(
+					'game_win',
+					{
+						winner_name: username,
+						main_board_position: mainBoardPosition,
+						inner_board_position: innerBoardPosition,
+					}
+				);
+				await redis.hSet(roomKey, { final_winner: username });
+				return;
+			}
+		}
+
+		const allowedBoxes = nextAllowedBoxes(gameBoard, mainBoardPosition);
+
+		const nextTurn = username == roomData.player_1 ? roomData.player_2 : roomData.player_1;
+		await redis.hSet(roomKey, { next_turn: nextTurn, game_board: JSON.stringify(gameBoard) });
+		io.to(roomKey).emit(
+			'next_turn', 
+			{
+				next_turn: nextTurn,
+				allowed_boxes: allowedBoxes,
+				main_board_position: mainBoardPosition,
+				inner_board_position: innerBoardPosition,
+			}
+		);
 		return;
 	});
 
