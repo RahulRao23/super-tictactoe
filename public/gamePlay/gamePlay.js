@@ -1,4 +1,4 @@
-let socket, roomId, userName, nextTurn;
+let socket, roomId, userName, nextTurn, playerData = {};
 
 // var modal = document.getElementById("myModal");
 
@@ -47,6 +47,11 @@ window.addEventListener('load', function () {
 		if (nextTurn == userName && player_2) {
 			alert('Please start the game by playing your move.');
 		}
+
+		if (player_1 && player_2) {
+			playerData[player_1] = 'X';
+			playerData[player_2] = 'O';
+		}
 	});
 
 	socket.on('invalid_room_join', () => {
@@ -67,7 +72,7 @@ window.addEventListener('load', function () {
 		const innerBox = 
 			mainBoardBox[(Number(row) * 3)+ Number(col)]
 			.children[(Number(innerRow) * 3)+ Number(innerCol)];
-		innerBox.innerHTML = nextTurn;
+		innerBox.innerHTML = playerData[nextTurn];
 
 		nextTurn = next_turn;
 	});
@@ -84,7 +89,9 @@ window.addEventListener('load', function () {
 			.children[(Number(innerRow) * 3)+ Number(innerCol)];
 
 		console.log("Player Won: ", winner_name);
-		innerBox.innerHTML = nextTurn;
+		innerBox.innerHTML = playerData[nextTurn];
+
+		alert(`${winner_name} has won the game. Create new room and play again!`);
 	});
 });
 
