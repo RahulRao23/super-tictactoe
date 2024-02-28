@@ -92,6 +92,7 @@ window.addEventListener('load', function () {
 		innerBox.innerHTML = playerData[nextTurn];
 
 		alert(`${winner_name} has won the game. Create new room and play again!`);
+		window.location.href = 'http://localhost:3000';
 	});
 });
 
