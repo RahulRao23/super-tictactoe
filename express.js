@@ -4,8 +4,6 @@ const { Server } = require('socket.io');
 const path = require('path');
 const minify = require('express-minify');
 
-const { dbConnect } = require('./config/dbConnect');
-
 const router = require('./src/routes/index.routes');
 const socketHandler = require('./src/sockets/sockets');
 
@@ -17,9 +15,6 @@ const PORT = 3000;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
-/* Establish DB connection */
-dbConnect();
 
 app.enable('trust proxy');
 app.set('io', io);
