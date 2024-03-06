@@ -107,7 +107,7 @@ window.addEventListener('load', function () {
 	});
 
 	socket.on('start_timer', () => startTimer());
-	
+
 	socket.on('game_status', data => {
 		alert(data.msg);
 	});
@@ -171,15 +171,3 @@ function startTimer() {
 function resetTimer() {
 	clearInterval(intervalId);
 }
-// Timer
-// let timer = document.getElementById('timer');
-// let seconds = 0;
-// let minutes = 0;
-// setInterval(() => {
-// 	seconds++;
-// 	if (seconds === 60) {
-// 			minutes++;
-// 			seconds = 0;
-// 	}
-// 	timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-// }, 1000);
