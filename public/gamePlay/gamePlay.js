@@ -1,4 +1,4 @@
-let socket, roomId, userName, nextTurn, playerData = {};
+let socket, roomId, userName, nextTurn, playerData = {}, intervalId, seconds=30, minutes=0;
 
 // var modal = document.getElementById("myModal");
 
@@ -29,6 +29,17 @@ window.addEventListener('load', function () {
 	const player2Div = document.getElementById('player2');
 	const passcodeDiv = document.getElementById('passcode');
 	const roomIdDiv = document.getElementById('roomId');
+	const modal = document.getElementById("myModal");
+	const btn = document.getElementById("startButton");
+
+	// Display the modal on page load
+	modal.style.display = "block";
+
+	// When the user clicks the button, open the modal
+	btn.onclick = function() {
+		socket.emit('player_ready', { room_id: roomId });
+		modal.style.display = "none";
+	}
 
 	roomIdDiv.textContent = 'Room ID: ' + roomId;
 
@@ -94,6 +105,16 @@ window.addEventListener('load', function () {
 		alert(`${winner_name} has won the game. Create new room and play again!`);
 		window.location.href = 'http://localhost:3000';
 	});
+
+	socket.on('start_timer', () => startTimer());
+	
+	socket.on('game_status', data => {
+		alert(data.msg);
+	});
+
+	socket.on('out_of_time', data => {
+	console.log('Out Of Time!!!');
+	})
 });
 
 // Function to handle clicks on the Tic Tac Toe board
@@ -115,8 +136,41 @@ function handleBoxClick(mainBoard, innerBoardPosition) {
 			innerBoardPosition,
 		}
 	);
+	// Reset timer for next turn
+	socket.on('reset_timer', () => {
+		// Clear timer for previous turn
+		resetTimer();
+		// Reset minutes and seconds value for current turn
+		seconds=30;
+		minutes=0;
+	});
+	// Start timer for next timer
+	startTimer();
 }
 
+function startTimer() {
+	let timer = document.getElementById('timer');
+
+	intervalId = setInterval(() => {
+			seconds--;
+			if (seconds < 0) {
+					if (minutes > 0) {
+							minutes--;
+							seconds = 59;
+					} else {
+							// Stop the timer when it reaches 0:00
+							socket.emit('out_of_time', { user_name: userName, room_id: roomId });
+							return;
+					}
+			}
+			console.log({ minutes, seconds });
+			timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	}, 1000);
+}
+
+function resetTimer() {
+	clearInterval(intervalId);
+}
 // Timer
 // let timer = document.getElementById('timer');
 // let seconds = 0;

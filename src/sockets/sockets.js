@@ -105,6 +105,7 @@ const socketHandler = (io) => {
 						player_1: user_name,
 						game_board: JSON.stringify(gameBoard),
 						next_turn: user_name,
+						players_ready_to_play: 0,
 					}
 				),
 			]);
@@ -259,6 +260,7 @@ const socketHandler = (io) => {
 					inner_board_position: innerBoardPosition,
 				}
 			);
+			io.to(roomKey).emit('reset_timer', {});
 			return;
 		});
 	
@@ -267,6 +269,32 @@ const socketHandler = (io) => {
 			const sids = io.of('/').adapter.sids;
 			console.log({ roomIds: [...roomIds], sids: [...sids] });
 			socket.emit('rooms', { roomIds: [...roomIds], sids: [...sids] });
+		});
+
+		socket.on('player_ready', async data => {
+			const { room_id } = data;
+	
+			const redis = await redisConnect();
+			const roomKey = 'Room:' + room_id;
+			const playerCount = await redis.hGet(roomKey, 'players_ready_to_play');
+
+			const roomData = { players_ready_to_play: 1 + +playerCount };
+			console.log({roomData});
+			await redis.hSet(roomKey, roomData);
+
+			if (roomData.players_ready_to_play == 1) {
+				socket.emit('game_status', { msg: 'Waiting for opponent!' });
+				return;
+			}
+
+			io.to(roomKey).emit('start_timer', {});
+			return;
+		});
+
+		socket.on('out_of_time', async data => {
+			const { room_id, user_name } = data;
+			io.to('Room:' + room_id).emit('out_of_time', {});
+			return;
 		});
 
 	});
