@@ -80,6 +80,7 @@ window.addEventListener('load', function () {
 			mainBoardBox[(Number(row) * 3)+ Number(col)]
 			.children[(Number(innerRow) * 3)+ Number(innerCol)];
 		innerBox.innerHTML = playerData[nextTurn];
+		innerBox.disabled = true;
 
 		nextTurn = next_turn;
 	});
