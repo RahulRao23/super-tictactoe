@@ -259,7 +259,7 @@ const socketHandler = (io) => {
 					inner_board_position: innerBoardPosition,
 				}
 			);
-			io.to(roomKey).emit('reset_timer', {});
+			// io.to(roomKey).emit('reset_timer', {});
 			return;
 		});
 	
@@ -291,7 +291,12 @@ const socketHandler = (io) => {
 
 		socket.on('out_of_time', async data => {
 			const { room_id, user_name } = data;
-			io.to('Room:' + room_id).emit('out_of_time', {});
+			const redis = await redisConnect();
+			const roomKey = 'Room:' + room_id;
+			const { player_1, player_2 } = await redis.hGetAll(roomKey);
+			const winnerName = user_name == player_1 ? player_2 : player_1;
+
+			io.to('Room:' + room_id).emit('game_win', { winner_name: winnerName });
 			return;
 		});
 

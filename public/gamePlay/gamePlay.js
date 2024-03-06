@@ -83,21 +83,34 @@ window.addEventListener('load', function () {
 		innerBox.disabled = true;
 
 		nextTurn = next_turn;
+
+		// Clear timer for previous turn
+		resetTimer();
+		// Reset minutes and seconds value for current turn
+		seconds=30;
+		minutes=0;
+
+		startTimer();
 	});
 
 	socket.on('game_win', data => {
 		const { winner_name, main_board_position, inner_board_position } = data;
 
-		const [row, col] = main_board_position.split('-');
-		const mainBoardBox = document.getElementsByClassName('inner-board');
-
-		const [innerRow, innerCol] = inner_board_position.split('-');
-		const innerBox = 
-			mainBoardBox[(Number(row) * 3)+ Number(col)]
-			.children[(Number(innerRow) * 3)+ Number(innerCol)];
-
-		console.log("Player Won: ", winner_name);
-		innerBox.innerHTML = playerData[nextTurn];
+		if (
+			main_board_position &&
+			inner_board_position
+		) {
+			const [row, col] = main_board_position.split('-');
+			const mainBoardBox = document.getElementsByClassName('inner-board');
+	
+			const [innerRow, innerCol] = inner_board_position.split('-');
+			const innerBox = 
+				mainBoardBox[(Number(row) * 3)+ Number(col)]
+				.children[(Number(innerRow) * 3)+ Number(innerCol)];
+	
+			console.log("Player Won: ", winner_name);
+			innerBox.innerHTML = playerData[nextTurn];
+		}
 
 		alert(`${winner_name} has won the game. Create new room and play again!`);
 		window.location.href = 'http://localhost:3000';
@@ -109,9 +122,16 @@ window.addEventListener('load', function () {
 		alert(data.msg);
 	});
 
-	socket.on('out_of_time', data => {
-	console.log('Out Of Time!!!');
-	})
+	// Reset timer for next turn
+	// socket.on('reset_timer', () => {
+	// 	// Clear timer for previous turn
+	// 	resetTimer();
+	// 	// Reset minutes and seconds value for current turn
+	// 	seconds=30;
+	// 	minutes=0;
+	// });
+	// // Start timer for next timer
+	// startTimer();
 });
 
 // Function to handle clicks on the Tic Tac Toe board
@@ -133,16 +153,6 @@ function handleBoxClick(mainBoard, innerBoardPosition) {
 			innerBoardPosition,
 		}
 	);
-	// Reset timer for next turn
-	socket.on('reset_timer', () => {
-		// Clear timer for previous turn
-		resetTimer();
-		// Reset minutes and seconds value for current turn
-		seconds=30;
-		minutes=0;
-	});
-	// Start timer for next timer
-	startTimer();
 }
 
 function startTimer() {
