@@ -131,7 +131,6 @@ const socketHandler = (io) => {
 			const passcodeKey = 'Passcode:' + passcode;
 	
 			const roomId = await redis.hGet(passcodeKey, 'room_id');
-			console.log({roomId});
 	
 			if (!roomId) {
 				socket.emit('invalid_data', { msg: 'Invalid room join!' });
@@ -279,7 +278,6 @@ const socketHandler = (io) => {
 			const playerCount = await redis.hGet(roomKey, 'players_ready_to_play');
 
 			const roomData = { players_ready_to_play: 1 + +playerCount };
-			console.log({roomData});
 			await redis.hSet(roomKey, roomData);
 
 			if (roomData.players_ready_to_play == 1) {
