@@ -134,14 +134,14 @@ const socketHandler = (io) => {
 			console.log({roomId});
 	
 			if (!roomId) {
-				socket.emit('invalid_room_join', { user_name });
+				socket.emit('invalid_data', { msg: 'Invalid room join!' });
 				// await redisDisconnect();
 				return;
 			}
 	
 			const roomData = await redis.hGetAll('Room:' + roomId);
 			if (roomData.player_1 && roomData.player_2) {
-				socket.emit('invalid_room_join', { user_name });
+				socket.emit('invalid_data', { msg: 'Invalid room join!' });
 				// await redisDisconnect();
 				return;
 			}
@@ -173,8 +173,8 @@ const socketHandler = (io) => {
 			const redis = await redisConnect();
 			const roomKey = 'Room:' + room_id;
 			const roomData = await redis.hGetAll(roomKey);
-			if(!roomData) {
-				socket.emit('invalid_room_join', { room_id });
+			if(!Object.keys(roomData).length) {
+				socket.emit('invalid_data', { msg: 'Invalid room join!' });
 				// await redisDisconnect();
 				return;
 			}
@@ -200,8 +200,8 @@ const socketHandler = (io) => {
 			const redis = await redisConnect();
 			const roomKey = 'Room:' + room_id;
 			const roomData = await redis.hGetAll(roomKey);
-			if(!roomData) {
-				socket.emit('invalid_room_join', { room_id });
+			if(!Object.keys(roomData).length) {
+				socket.emit('invalid_data', { msg: 'Invalid room join!' });
 				// await redisDisconnect();
 				return;
 			}

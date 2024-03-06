@@ -51,9 +51,9 @@ document.getElementById("joinRoomForm").addEventListener("submit", function(even
 		user_name: username,
 	});
 
-	socket.on('invalid_room_join', () => {
-		alert('Invalid room join!');
-	});
+	socket.on('invalid_data', data => {
+		alert(data.msg);
+	})
 	
 	socket.on('joining_room', data => {
 		const { user_name, passcode, room_id, socket_id } = data;

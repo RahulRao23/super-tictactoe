@@ -65,10 +65,6 @@ window.addEventListener('load', function () {
 		}
 	});
 
-	socket.on('invalid_room_join', () => {
-		alert('Invalid room join!');
-	});
-
 	socket.on('invalid_data', data => {
 		alert(data.msg);
 	})
