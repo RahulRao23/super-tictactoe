@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Making</title>
+<link rel="stylesheet" href="/waitingPage/waitingPage.css">
+</head>
+<body>
+  <div id="matchmaking">
+    <p>Match making in progress...</p>
+    <p>You will be joining the game shortly</p>
+    <div id="countdown">2:00</div>
+  </div>
+
+	<script src="/waitingPage/waitingPage.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+<!-- <script>
+  // Countdown function
+  function countdown() {
+    var seconds = 120; // 2 minutes
+    var countdownElement = document.getElementById('countdown');
+
+    var interval = setInterval(function() {
+      var minutes = Math.floor(seconds / 60);
+      var remainderSeconds = seconds % 60;
+
+      countdownElement.textContent = minutes + ':' + (remainderSeconds < 10 ? '0' : '') + remainderSeconds;
+
+      if (seconds <= 0) {
+        clearInterval(interval);
+        countdownElement.textContent = '0:00';
+        // Optionally, you can add further actions when the countdown reaches 0:00
+        // For example, redirecting the user or displaying a message.
+      } else {
+        seconds--;
+      }
+    }, 1000);
+  }
+
+  // Start the countdown when the page loads
+  window.onload = function() {
+    countdown();
+  };
+</script> -->
+</body>
+</html>

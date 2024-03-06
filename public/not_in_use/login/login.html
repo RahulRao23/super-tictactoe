@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Login Form</title>
+		<link rel="stylesheet" href="login/login.css">
+		</head>
+		<body>
+
+		<div class="login-container">
+			<h2>Login</h2>
+			<form id="login-form">
+				<div class="form-group">
+					<label for="username">Username:</label>
+					<input type="text" id="username" name="username" required>
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label>
+					<input type="password" id="password" name="password" required>
+				</div>
+				<div class="form-group">
+					<input type="submit" value="Login">
+				</div>
+			</form>
+		</div>
+
+		<script src="login/login.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+
+		<!-- <script>
+			document.getElementById("login-form").addEventListener("submit", function(event) {
+				event.preventDefault();
+				
+				// Retrieve username and password
+				var username = document.getElementById("username").value;
+				var password = document.getElementById("password").value;
+				
+				// Construct your API call here (replace this comment with your actual API call)
+				// For demonstration purposes, we're just logging the values
+				console.log("Username:", username);
+				console.log("Password:", password);
+
+				// You can make your API call here using fetch or XMLHttpRequest
+				// Example:
+				fetch("http://localhost:3000/user/createUser", {
+				    method: "POST",
+				    body: JSON.stringify({ user_name: username, password: password }),
+				    headers: {
+				        "Content-Type": "application/json"
+				    }
+				})
+				.then(response => response.json())
+				.then(data => {
+				    // Handle API response
+				})
+				.catch(error => {
+				    console.error("Error:", error);
+				});
+			});
+		</script> -->
+
+		</body>
+		</html>
