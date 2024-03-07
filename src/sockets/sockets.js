@@ -236,7 +236,7 @@ const socketHandler = (io) => {
 				const mainBoard = {};
 				Object.entries(gameBoard).map(([key, gameData]) => mainBoard[key] = gameData.winner ? gameData.winner : null);
 	
-				const isGameWinner = checkWinner(mainBoard, mainBoardPosition);
+				const isGameWinner = checkWinner(mainBoard, mainBoardPosition, move);
 				if (isGameWinner) {
 					io.to(roomKey).emit(
 						'game_win',
