@@ -195,6 +195,10 @@ const socketHandler = (io) => {
 	
 		socket.on('player_turn', async data => {
 			const { room_id, username, mainBoardPosition, innerBoardPosition } = data;
+			const nextTurnData = {
+				main_board_position: mainBoardPosition,
+				inner_board_position: innerBoardPosition,
+			};
 	
 			const redis = await redisConnect();
 			const roomKey = 'Room:' + room_id;
@@ -232,6 +236,8 @@ const socketHandler = (io) => {
 	
 			if (isWinnerOfInnerBoard) {
 				innerBoard.winner = move;
+
+				nextTurnData.inner_board_winner = username;
 	
 				const mainBoard = {};
 				Object.entries(gameBoard).map(([key, gameData]) => mainBoard[key] = gameData.winner ? gameData.winner : null);
@@ -251,20 +257,12 @@ const socketHandler = (io) => {
 				}
 			}
 	
-			const allowedBoxes = nextAllowedBoxes(gameBoard, mainBoardPosition);
-	
-			const nextTurn = username == roomData.player_1 ? roomData.player_2 : roomData.player_1;
-			await redis.hSet(roomKey, { next_turn: nextTurn, game_board: JSON.stringify(gameBoard) });
-			io.to(roomKey).emit(
-				'next_turn', 
-				{
-					next_turn: nextTurn,
-					allowed_boxes: allowedBoxes,
-					main_board_position: mainBoardPosition,
-					inner_board_position: innerBoardPosition,
-				}
-			);
-			// io.to(roomKey).emit('reset_timer', {});
+			nextTurnData.allowed_boxes = nextAllowedBoxes(gameBoard, mainBoardPosition);
+			nextTurnData.next_turn = username == roomData.player_1 ? roomData.player_2 : roomData.player_1;
+
+			await redis.hSet(roomKey, { next_turn: nextTurnData.next_turn, game_board: JSON.stringify(gameBoard) });
+
+			io.to(roomKey).emit('next_turn', nextTurnData);
 			return;
 		});
 	

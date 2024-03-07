@@ -77,7 +77,7 @@ window.addEventListener('load', function () {
 	})
 
 	socket.on('next_turn', data => {
-		const { next_turn, allowed_boxes, main_board_position, inner_board_position } = data;
+		const { next_turn, allowed_boxes, main_board_position, inner_board_position, inner_board_winner } = data;
 		
 		const [row, col] = main_board_position.split('-');
 		const mainBoardBox = document.getElementsByClassName('inner-board');
@@ -88,6 +88,13 @@ window.addEventListener('load', function () {
 			.children[(Number(innerRow) * 3)+ Number(innerCol)];
 		innerBox.innerHTML = playerData[nextTurn];
 		innerBox.disabled = true;
+
+		if (inner_board_winner) {
+			const mainBoard = mainBoardBox[(Number(row) * 3)+ Number(col)];
+			const overLayDiv = mainBoard.children[mainBoard.children.length - 1];
+			overLayDiv.innerHTML = playerData[nextTurn];
+			overLayDiv.style.display = 'flex';
+		}
 
 		nextTurn = next_turn;
 

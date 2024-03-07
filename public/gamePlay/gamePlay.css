@@ -32,6 +32,7 @@ body {
 .inner-board {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
+	position: relative;
 }
 
 .inner-box {
@@ -81,4 +82,18 @@ body {
 	border-radius: 5px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 	display: none; /* Initially hidden */
+	z-index: 2;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(122, 179, 218, 0.5); /* Adjust transparency as needed */
+	z-index: 1;
 }
