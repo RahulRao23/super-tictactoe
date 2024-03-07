@@ -30,12 +30,12 @@ const socketHandler = (io) => {
 
 	function nextAllowedBoxes(board, boardPosition) {
 		const [row, col] = boardPosition.split('-');
-		let allowedBoxes;
+
 		// If current box is already completed then opponent can insert in any available boxes
 		if (board[`${row}-${col}`].winner) {
-			allowedBoxes = Object.entries(board).map(([box, gameData]) => {
-				if (!gameData.winner) return box;
-			});
+			return Object.entries(board)
+			.filter(([box, gameData]) => !gameData.winner)
+			.map(([box, gameData]) => box);
 		}
 		return [`${row}-${col}`];
 	}
@@ -257,7 +257,7 @@ const socketHandler = (io) => {
 				}
 			}
 	
-			nextTurnData.allowed_boxes = nextAllowedBoxes(gameBoard, mainBoardPosition);
+			nextTurnData.allowed_boxes = nextAllowedBoxes(gameBoard, innerBoardPosition);
 			nextTurnData.next_turn = username == roomData.player_1 ? roomData.player_2 : roomData.player_1;
 
 			await redis.hSet(roomKey, { next_turn: nextTurnData.next_turn, game_board: JSON.stringify(gameBoard) });
