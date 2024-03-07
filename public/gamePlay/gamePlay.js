@@ -31,9 +31,11 @@ window.addEventListener('load', function () {
 	const roomIdDiv = document.getElementById('roomId');
 	const modal = document.getElementById("myModal");
 	const btn = document.getElementById("startButton");
+	const popup = document.getElementById('popup');
 
 	// Display the modal on page load
 	modal.style.display = "block";
+	popup.style.display = 'none';
 
 	// When the user clicks the button, open the modal
 	btn.onclick = function() {
@@ -66,7 +68,12 @@ window.addEventListener('load', function () {
 	});
 
 	socket.on('invalid_data', data => {
-		alert(data.msg);
+		popup.innerHTML = data.msg;
+		popup.style.display = 'block';
+
+		setTimeout(function() {
+			popup.style.display = 'none';
+		}, 2000);
 	})
 
 	socket.on('next_turn', data => {

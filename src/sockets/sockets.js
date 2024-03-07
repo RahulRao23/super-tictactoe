@@ -209,6 +209,11 @@ const socketHandler = (io) => {
 				return;
 			}
 	
+			if (roomData.players_ready_to_play != 2) {
+				socket.emit('invalid_data', { msg: 'Please click start and wait for your opponent to start the game.' });
+				return;
+			}
+	
 			if (roomData.next_turn !== username) {
 				socket.emit('invalid_data', { msg: 'Not your turn. Please wait for your opponent to play their turn!' });
 				return;
