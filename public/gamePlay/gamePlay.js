@@ -1,4 +1,4 @@
-let socket, roomId, userName, nextTurn, playerData = {}, intervalId, seconds=30, minutes=0;
+let socket, roomId, userName, nextTurn, allowedBoxes = [], playerData = {}, intervalId, seconds=30, minutes=0, popupDiv;
 
 // var modal = document.getElementById("myModal");
 
@@ -31,11 +31,11 @@ window.addEventListener('load', function () {
 	const roomIdDiv = document.getElementById('roomId');
 	const modal = document.getElementById("myModal");
 	const btn = document.getElementById("startButton");
-	const popup = document.getElementById('popup');
+	popupDiv = document.getElementById('popup');
 
 	// Display the modal on page load
 	modal.style.display = "block";
-	popup.style.display = 'none';
+	popupDiv.style.display = 'none';
 
 	// When the user clicks the button, open the modal
 	btn.onclick = function() {
@@ -67,20 +67,14 @@ window.addEventListener('load', function () {
 		}
 	});
 
-	socket.on('invalid_data', data => {
-		popup.innerHTML = data.msg;
-		popup.style.display = 'block';
-
-		setTimeout(function() {
-			popup.style.display = 'none';
-		}, 2000);
-	})
+	socket.on('invalid_data', data => showPopUpMessage(data.msg));
 
 	socket.on('next_turn', data => {
 		const { next_turn, allowed_boxes, main_board_position, inner_board_position, inner_board_winner } = data;
 		
 		const [row, col] = main_board_position.split('-');
 		const mainBoardBox = document.getElementsByClassName('inner-board');
+		allowedBoxes = allowed_boxes;
 
 		const [innerRow, innerCol] = inner_board_position.split('-');
 		const innerBox = 
@@ -136,9 +130,7 @@ window.addEventListener('load', function () {
 
 	socket.on('start_timer', () => startTimer());
 
-	socket.on('game_status', data => {
-		alert(data.msg);
-	});
+	socket.on('game_status', data => showPopUpMessage(data.msg));
 
 	// Reset timer for next turn
 	// socket.on('reset_timer', () => {
@@ -162,37 +154,54 @@ function handleBoxClick(mainBoard, innerBoardPosition) {
 	const mainBoardPosition = mainBoard.parentNode.getAttribute('board-value');
 	console.log('Clicked on parent box:', mainBoardPosition, innerBoardPosition);
 
-	socket.emit(
-		'player_turn',
-		{ 
-			room_id: roomId,
-			username: userName,
-			mainBoardPosition,
-			innerBoardPosition,
-		}
-	);
+	if (nextTurn != userName) {
+		showPopUpMessage('Not your turn. Please wait for your opponent to play their turn!');
+	}
+	else if (allowedBoxes.length && !allowedBoxes.includes(mainBoardPosition)) {
+		showPopUpMessage('Invalid move!');
+	}
+	else {
+		socket.emit(
+			'player_turn',
+			{ 
+				room_id: roomId,
+				username: userName,
+				mainBoardPosition,
+				innerBoardPosition,
+			}
+		);
+	}
 }
 
 function startTimer() {
 	let timer = document.getElementById('timer');
 
 	intervalId = setInterval(() => {
-			seconds--;
-			if (seconds < 0) {
-					if (minutes > 0) {
-							minutes--;
-							seconds = 59;
-					} else {
-							// Stop the timer when it reaches 0:00
-							socket.emit('out_of_time', { user_name: userName, room_id: roomId });
-							return;
-					}
+		seconds--;
+		if (seconds < 0) {
+			if (minutes > 0) {
+				minutes--;
+				seconds = 59;
+			} else {
+				// Stop the timer when it reaches 0:00
+				socket.emit('out_of_time', { user_name: userName, room_id: roomId });
+				return;
 			}
-			console.log({ minutes, seconds });
-			timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+		}
+		console.log({ minutes, seconds });
+		timer.textContent = `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	}, 1000);
 }
 
 function resetTimer() {
 	clearInterval(intervalId);
+}
+
+function showPopUpMessage(msg) {
+	popupDiv.innerHTML = msg;
+	popupDiv.style.display = 'block';
+
+	setTimeout(function() {
+		popupDiv.style.display = 'none';
+	}, 2000);
 }
