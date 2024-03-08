@@ -118,12 +118,16 @@ window.addEventListener('load', function () {
 			const mainBoardBox = document.getElementsByClassName('inner-board');
 	
 			const [innerRow, innerCol] = inner_board_position.split('-');
-			const innerBox = 
-				mainBoardBox[(Number(row) * 3)+ Number(col)]
-				.children[(Number(innerRow) * 3)+ Number(innerCol)];
+
+			const mainBoard = mainBoardBox[(Number(row) * 3)+ Number(col)];
+			const innerBox = mainBoard.children[(Number(innerRow) * 3)+ Number(innerCol)];
 	
 			console.log("Player Won: ", winner_name);
 			innerBox.innerHTML = playerData[nextTurn];
+
+			const overLayDiv = mainBoard.children[mainBoard.children.length - 1];
+			overLayDiv.innerHTML = playerData[nextTurn];
+			overLayDiv.style.display = 'flex';
 		}
 
 		alert(`${winner_name} has won the game. Create new room and play again!`);
