@@ -38,8 +38,9 @@ constants.USER_ROLES = {
 };
 
 constants.PLAYER_SIGN = {
-	X: 1,
-	O: 2,
+	X: 'X',
+	O: 'O',
+	DRAW: '-',
 }
 
 module.exports = constants;

@@ -1,4 +1,4 @@
-let socket, roomId, userName, nextTurn, allowedBoxes = [], playerData = {}, intervalId, seconds=30, minutes=0, popupDiv;
+let socket, roomId, userName, nextTurn, allowedBoxes = [], intervalId, seconds=30, minutes=0, popupDiv;
 
 // var modal = document.getElementById("myModal");
 
@@ -61,16 +61,12 @@ window.addEventListener('load', function () {
 			alert('Please start the game by playing your move.');
 		}
 
-		if (player_1 && player_2) {
-			playerData[player_1] = 'X';
-			playerData[player_2] = 'O';
-		}
 	});
 
 	socket.on('invalid_data', data => showPopUpMessage(data.msg));
 
 	socket.on('next_turn', data => {
-		const { next_turn, allowed_boxes, main_board_position, inner_board_position, inner_board_winner } = data;
+		const { next_turn, allowed_boxes, main_board_position, inner_board_position, inner_board_winner, current_move, is_draw } = data;
 		
 		const [row, col] = main_board_position.split('-');
 		const mainBoardBox = document.getElementsByClassName('inner-board');
@@ -80,13 +76,13 @@ window.addEventListener('load', function () {
 		const innerBox = 
 			mainBoardBox[(Number(row) * 3)+ Number(col)]
 			.children[(Number(innerRow) * 3)+ Number(innerCol)];
-		innerBox.innerHTML = playerData[nextTurn];
+		innerBox.innerHTML = current_move;
 		innerBox.disabled = true;
 
-		if (inner_board_winner) {
+		if (inner_board_winner || is_draw) {
 			const mainBoard = mainBoardBox[(Number(row) * 3)+ Number(col)];
 			const overLayDiv = mainBoard.children[mainBoard.children.length - 1];
-			overLayDiv.innerHTML = playerData[nextTurn];
+			overLayDiv.innerHTML = is_draw ? '-' : current_move;
 			overLayDiv.style.display = 'flex';
 		}
 
@@ -102,7 +98,7 @@ window.addEventListener('load', function () {
 	});
 
 	socket.on('game_win', data => {
-		const { winner_name, main_board_position, inner_board_position } = data;
+		const { winner_name, main_board_position, inner_board_position, current_move } = data;
 
 		if (
 			main_board_position &&
@@ -117,10 +113,10 @@ window.addEventListener('load', function () {
 			const innerBox = mainBoard.children[(Number(innerRow) * 3)+ Number(innerCol)];
 	
 			console.log("Player Won: ", winner_name);
-			innerBox.innerHTML = playerData[nextTurn];
+			innerBox.innerHTML = current_move;
 
 			const overLayDiv = mainBoard.children[mainBoard.children.length - 1];
-			overLayDiv.innerHTML = playerData[nextTurn];
+			overLayDiv.innerHTML = current_move;
 			overLayDiv.style.display = 'flex';
 		}
 

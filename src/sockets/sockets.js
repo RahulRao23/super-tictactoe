@@ -28,6 +28,10 @@ const socketHandler = (io) => {
 		return false;
 	}
 
+	function isGameDraw(board) {
+		return !Object.values(board).filter(value => !value).length;
+	}
+
 	function nextAllowedBoxes(board, boardPosition) {
 		const [row, col] = boardPosition.split('-');
 
@@ -230,19 +234,27 @@ const socketHandler = (io) => {
 				socket.emit('invalid_data', { msg: 'Board is already completed. Please try other board.' });
 				return;
 			}
-			const move = roomData.player_1 == username ? CONSTANTS.PLAYER_SIGN.X : CONSTANTS.PLAYER_SIGN.O;
+			nextTurnData.current_move = roomData.player_1 == username ? CONSTANTS.PLAYER_SIGN.X : CONSTANTS.PLAYER_SIGN.O;
 	
-			const isWinnerOfInnerBoard = checkWinner(innerBoard.inner_game_board, innerBoardPosition, move);
+			const isWinnerOfInnerBoard = checkWinner(innerBoard.inner_game_board, innerBoardPosition, nextTurnData.current_move);
 	
+			if (
+				!isWinnerOfInnerBoard && 
+				isGameDraw(innerBoard.inner_game_board)
+			) {
+				innerBoard.inner_game_board.winner = CONSTANTS.PLAYER_SIGN.DRAW;
+				nextTurnData.is_draw = 1;
+			}
+			
 			if (isWinnerOfInnerBoard) {
-				innerBoard.winner = move;
+				innerBoard.winner = nextTurnData.current_move;
 
 				nextTurnData.inner_board_winner = username;
 	
 				const mainBoard = {};
 				Object.entries(gameBoard).map(([key, gameData]) => mainBoard[key] = gameData.winner ? gameData.winner : null);
 	
-				const isGameWinner = checkWinner(mainBoard, mainBoardPosition, move);
+				const isGameWinner = checkWinner(mainBoard, mainBoardPosition, nextTurnData.current_move);
 				if (isGameWinner) {
 					io.to(roomKey).emit(
 						'game_win',
@@ -250,6 +262,7 @@ const socketHandler = (io) => {
 							winner_name: username,
 							main_board_position: mainBoardPosition,
 							inner_board_position: innerBoardPosition,
+							current_move: nextTurnData.current_move,
 						}
 					);
 					await redis.hSet(roomKey, { final_winner: username });
