@@ -175,9 +175,9 @@ function handleBoxClick(mainBoard, innerBoardPosition) {
 	if (nextTurn != userName) {
 		showPopUpMessage('Not your turn. Please wait for your opponent to play their turn!');
 	}
-	// else if (allowedBoxes.length && !allowedBoxes.includes(mainBoardPosition)) {
-	// 	showPopUpMessage('Invalid move!');
-	// }
+	else if (allowedBoxes.length && !allowedBoxes.includes(mainBoardPosition)) {
+		showPopUpMessage('Invalid move!');
+	}
 	else {
 		socket.emit(
 			'player_turn',
