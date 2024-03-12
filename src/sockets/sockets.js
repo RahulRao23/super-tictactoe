@@ -238,13 +238,6 @@ const socketHandler = (io) => {
 	
 			const isWinnerOfInnerBoard = checkWinner(innerBoard.inner_game_board, innerBoardPosition, nextTurnData.current_move);
 	
-			if (
-				!isWinnerOfInnerBoard && 
-				isGameDraw(innerBoard.inner_game_board)
-			) {
-				innerBoard.inner_game_board.winner = CONSTANTS.PLAYER_SIGN.DRAW;
-				nextTurnData.is_draw = 1;
-			}
 			
 			if (isWinnerOfInnerBoard) {
 				innerBoard.winner = nextTurnData.current_move;
@@ -268,6 +261,30 @@ const socketHandler = (io) => {
 					await redis.hSet(roomKey, { final_winner: username });
 					return;
 				}
+			} 
+			
+			if (
+				isGameDraw(
+					Object.entries(gameBoard).reduce((obj, [key, gameData]) => 
+					{ 
+						obj[key] = gameData.winner;
+						return obj;
+					}, {})
+				)
+			) {
+				io.to(roomKey).emit('game_draw', {
+					main_board_position: mainBoardPosition,
+					inner_board_position: innerBoardPosition,
+					current_move: nextTurnData.current_move,
+				});
+				return;
+			}
+
+			if (
+				isGameDraw(innerBoard.inner_game_board)
+			) {
+				innerBoard.winner = CONSTANTS.PLAYER_SIGN.DRAW;
+				nextTurnData.is_draw = 1;
 			}
 	
 			nextTurnData.allowed_boxes = nextAllowedBoxes(gameBoard, innerBoardPosition);

@@ -124,6 +124,28 @@ window.addEventListener('load', function () {
 		window.location.href = 'http://localhost:3000';
 	});
 
+	socket.on('game_draw', data => {
+		const { main_board_position, inner_board_position, current_move } = data;
+
+		const [row, col] = main_board_position.split('-');
+			const mainBoardBox = document.getElementsByClassName('inner-board');
+	
+			const [innerRow, innerCol] = inner_board_position.split('-');
+
+			const mainBoard = mainBoardBox[(Number(row) * 3)+ Number(col)];
+			const innerBox = mainBoard.children[(Number(innerRow) * 3)+ Number(innerCol)];
+	
+			// console.log("Player Won: ", winner_name);
+			innerBox.innerHTML = current_move;
+
+			const overLayDiv = mainBoard.children[mainBoard.children.length - 1];
+			overLayDiv.innerHTML = current_move;
+			overLayDiv.style.display = 'flex';
+
+			alert(`Well played! It's a draw. Create new room and play again.`);
+			window.location.href = 'http://localhost:3000';
+	});
+
 	socket.on('start_timer', () => startTimer());
 
 	socket.on('game_status', data => showPopUpMessage(data.msg));
@@ -153,9 +175,9 @@ function handleBoxClick(mainBoard, innerBoardPosition) {
 	if (nextTurn != userName) {
 		showPopUpMessage('Not your turn. Please wait for your opponent to play their turn!');
 	}
-	else if (allowedBoxes.length && !allowedBoxes.includes(mainBoardPosition)) {
-		showPopUpMessage('Invalid move!');
-	}
+	// else if (allowedBoxes.length && !allowedBoxes.includes(mainBoardPosition)) {
+	// 	showPopUpMessage('Invalid move!');
+	// }
 	else {
 		socket.emit(
 			'player_turn',
