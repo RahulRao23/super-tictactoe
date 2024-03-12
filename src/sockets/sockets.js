@@ -238,6 +238,12 @@ const socketHandler = (io) => {
 	
 			const isWinnerOfInnerBoard = checkWinner(innerBoard.inner_game_board, innerBoardPosition, nextTurnData.current_move);
 	
+			if (
+				isGameDraw(innerBoard.inner_game_board)
+			) {
+				innerBoard.winner = CONSTANTS.PLAYER_SIGN.DRAW;
+				nextTurnData.is_draw = 1;
+			}
 			
 			if (isWinnerOfInnerBoard) {
 				innerBoard.winner = nextTurnData.current_move;
@@ -280,13 +286,6 @@ const socketHandler = (io) => {
 				return;
 			}
 
-			if (
-				isGameDraw(innerBoard.inner_game_board)
-			) {
-				innerBoard.winner = CONSTANTS.PLAYER_SIGN.DRAW;
-				nextTurnData.is_draw = 1;
-			}
-	
 			nextTurnData.allowed_boxes = nextAllowedBoxes(gameBoard, innerBoardPosition);
 			nextTurnData.next_turn = username == roomData.player_1 ? roomData.player_2 : roomData.player_1;
 
