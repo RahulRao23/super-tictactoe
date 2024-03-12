@@ -58,7 +58,7 @@ window.addEventListener('load', function () {
 		if (player_2) player2Div.textContent = player_2 + ': O';
 
 		if (nextTurn == userName && player_2) {
-			alert('Please start the game by playing your move.');
+			showPopUpMessage('Please start the game by playing your move.');
 		}
 
 	});
