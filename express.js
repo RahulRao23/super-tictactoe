@@ -10,7 +10,7 @@ const socketHandler = require('./src/sockets/sockets');
 /* Get all routes */
 const userRouter = require('./src/routes/user.routes');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = http.createServer(app);
