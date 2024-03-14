@@ -37,5 +37,5 @@ app.use('/user', userRouter);
 socketHandler(io);
 
 server.listen(PORT, () => { 
-	console.log(`Server running at http://localhost:${PORT}`) 
+	console.log(`Server running at ${process.env.ENDPOINT}`) 
 });
