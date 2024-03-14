@@ -8,6 +8,8 @@ document.getElementById("joinRoomBtn").addEventListener("click", function() {
 	document.getElementById("createRoomForm").style.display = "none";
 });
 
+const URL = process.env.ENDPOINT;
+
 document.getElementById("createRoomForm").addEventListener("submit", function(event) {
 
 	event.preventDefault();
@@ -24,7 +26,7 @@ document.getElementById("createRoomForm").addEventListener("submit", function(ev
 
 	socket.on('room_created', data => {
 		const { user_name, passcode, room_id, socket_id } = data;
-		window.location.href = 'https://super-tictactoe.onrender.com/gamePlayPage' + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
+		window.location.href = `${URL}/gamePlayPage` + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
 	});
 
 	// Make API call here with username to create room
@@ -57,6 +59,6 @@ document.getElementById("joinRoomForm").addEventListener("submit", function(even
 	
 	socket.on('joining_room', data => {
 		const { user_name, passcode, room_id, socket_id } = data;
-		window.location.href = 'https://super-tictactoe.onrender.com/gamePlayPage' + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
+		window.location.href = `${URL}/gamePlayPage` + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
 	});
 });
