@@ -1,3 +1,4 @@
+require('dotenv').config();
 express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -37,5 +38,5 @@ app.use('/user', userRouter);
 socketHandler(io);
 
 server.listen(PORT, () => { 
-	console.log(`Server running at ${process.env.ENDPOINT}`) 
+	console.log(`Server running successfully.`) 
 });
