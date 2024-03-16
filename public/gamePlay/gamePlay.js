@@ -121,7 +121,7 @@ window.addEventListener('load', function () {
 		}
 
 		alert(`${winner_name} has won the game. Create new room and play again!`);
-		window.location.href = 'https://super-tictactoe.onrender.com';
+		window.location.href = "/";
 	});
 
 	socket.on('game_draw', data => {
@@ -143,7 +143,7 @@ window.addEventListener('load', function () {
 			overLayDiv.style.display = 'flex';
 
 			alert(`Well played! It's a draw. Create new room and play again.`);
-			window.location.href = 'https://super-tictactoe.onrender.com';
+			window.location.href = "/";
 	});
 
 	socket.on('start_timer', () => startTimer());
