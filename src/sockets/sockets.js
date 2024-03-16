@@ -265,6 +265,7 @@ const socketHandler = (io) => {
 						}
 					);
 					await redis.hSet(roomKey, { final_winner: username });
+					await redis.flushAll();
 					return;
 				}
 			} 
@@ -283,6 +284,7 @@ const socketHandler = (io) => {
 					inner_board_position: innerBoardPosition,
 					current_move: nextTurnData.current_move,
 				});
+				await redis.flushAll();
 				return;
 			}
 
@@ -329,6 +331,7 @@ const socketHandler = (io) => {
 			const winnerName = user_name == player_1 ? player_2 : player_1;
 
 			io.to('Room:' + room_id).emit('game_win', { winner_name: winnerName });
+			await redis.flushAll();
 			return;
 		});
 
