@@ -97,3 +97,11 @@ body {
   background-color: rgba(122, 179, 218, 0.5); /* Adjust transparency as needed */
 	z-index: 1;
 }
+
+.indicator-board {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	position: absolute;
+	top: 45%;
+  left: 10%;
+}
