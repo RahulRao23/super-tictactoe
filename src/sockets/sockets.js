@@ -52,6 +52,13 @@ const socketHandler = (io) => {
 			const redis = await redisConnect();
 			const user = 'User:' + user_name;
 	
+			const roomData = await redis.keys('Room:*');
+			console.log({roomData});
+			if (roomData.length) {
+				socket.emit('invalid_data', { msg: "Only 1 room can be creaated at a time. Please wait till other room is completed." })
+				return;
+			}
+
 			const userExists = await redis.hGet(user, 'room_id');
 			if (userExists) {
 				socket.emit('user_exists', { user_name });

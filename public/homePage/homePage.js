@@ -13,6 +13,7 @@ document.getElementById("createRoomForm").addEventListener("submit", function(ev
 	event.preventDefault();
 	var username = document.getElementById("usernameCreate").value;
 	const socket = io();
+	const popupDiv = document.getElementById('popup');
 
 	socket.emit('create_room', {
 		user_name: username,
@@ -26,6 +27,8 @@ document.getElementById("createRoomForm").addEventListener("submit", function(ev
 		const { user_name, passcode, room_id, socket_id } = data;
 		window.location.href = `/gamePlayPage` + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
 	});
+
+	socket.on('invalid_data', data => showPopUpMessage(popupDiv, data.msg));
 
 	// Make API call here with username to create room
 	console.log("Creating room with username:", username);
@@ -60,3 +63,12 @@ document.getElementById("joinRoomForm").addEventListener("submit", function(even
 		window.location.href = `/gamePlayPage` + `?username=${user_name}&room_id=${room_id}&passcode=${passcode}&socket_id=${socket_id}`;
 	});
 });
+
+function showPopUpMessage(popupDiv, msg) {
+	popupDiv.innerHTML = msg;
+	popupDiv.style.display = 'block';
+
+	setTimeout(function() {
+		popupDiv.style.display = 'none';
+	}, 2000);
+}
