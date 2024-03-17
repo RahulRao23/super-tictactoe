@@ -86,6 +86,8 @@ window.addEventListener('load', function () {
 			overLayDiv.style.display = 'flex';
 		}
 
+		indicateAllowedBoxes(allowedBoxes);
+
 		nextTurn = next_turn;
 
 		// Clear timer for previous turn
@@ -161,6 +163,23 @@ window.addEventListener('load', function () {
 	// // Start timer for next timer
 	// startTimer();
 });
+
+function indicateAllowedBoxes(allowedBoxes) {
+	const board = document.getElementsByClassName('indicator-board')[0];
+
+	// Reset background color of all inner boxes
+	for (let i = 0; i < board.children.length; i++) {
+		const innerBox = board.children[i];
+		innerBox.style.backgroundColor = "";
+	}
+
+	// Update allowed boxes indicators
+	allowedBoxes.forEach(box => {
+		const [row, col] = box.split("-");
+		const innerBox = board.children[(Number(row) * 3) + Number(col)];
+		innerBox.style.backgroundColor = "green";
+	});
+}
 
 // Function to handle clicks on the Tic Tac Toe board
 function handleClick(boardRow, boardCol, row, col) {
