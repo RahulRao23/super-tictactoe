@@ -19,3 +19,4 @@
 - Redis
 - HTML
 - CSS
+- JavaScript
