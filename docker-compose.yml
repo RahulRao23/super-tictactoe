@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    image: super-tictactoe
+    container_name: tictactoe
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT = 6379
+      - PORT = 3000
+      - ENDPOINT = http://localhost:3000
+    ports:
+      - "3000:3000"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
